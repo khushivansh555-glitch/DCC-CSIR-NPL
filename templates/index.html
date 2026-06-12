@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Uncertainty Analysis</title>
+</head>
+
+<body>
+
+<h2>Upload Excel File</h2>
+
+<form action="/calculate"
+method="POST"
+enctype="multipart/form-data">
+
+<input type="file"
+name="excel"
+required>
+
+<br><br>
+
+Resolution:
+<input type="number"
+step="any"
+name="resolution"
+required>
+
+<br><br>
+
+Calibration Uncertainty:
+<input type="number"
+step="any"
+name="calibration"
+required>
+
+<br><br>
+
+Drift:
+<input type="number"
+step="any"
+name="drift"
+required>
+
+<br><br>
+
+Temperature Effect:
+<input type="number"
+step="any"
+name="temperature"
+required>
+
+<br><br>
+
+Coverage Factor:
+<input type="number"
+step="any"
+name="k"
+value="2">
+
+<br><br>
+
+<button type="submit">
+Calculate Result
+</button>
+
+</form>
+
+</body>
+</html>
