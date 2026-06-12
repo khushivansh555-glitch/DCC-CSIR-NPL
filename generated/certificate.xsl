@@ -161,38 +161,67 @@ Type B Contributions
 <tr>
 <th>Component</th>
 <th>Contribution</th>
+<th>Unit</th>
 </tr>
 
 <tr>
 <td>Resolution</td>
+
 <td>
 <xsl:value-of
 select="CalibrationCertificate/Uncertainty/ResolutionContribution"/>
 </td>
+
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/ResolutionUnit"/>
+</td>
+
 </tr>
 
 <tr>
 <td>Calibration</td>
+
 <td>
 <xsl:value-of
 select="CalibrationCertificate/Uncertainty/CalibrationContribution"/>
 </td>
+
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/CalibrationUnit"/>
+</td>
+
 </tr>
 
 <tr>
 <td>Drift</td>
+
 <td>
 <xsl:value-of
 select="CalibrationCertificate/Uncertainty/DriftContribution"/>
 </td>
+
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/DriftUnit"/>
+</td>
+
 </tr>
 
 <tr>
 <td>Temperature</td>
+
 <td>
 <xsl:value-of
 select="CalibrationCertificate/Uncertainty/TemperatureContribution"/>
 </td>
+
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/TemperatureUnit"/>
+</td>
+
 </tr>
 
 </table>

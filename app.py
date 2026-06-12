@@ -24,22 +24,11 @@ def generate_xml(results):
     root = ET.Element("CalibrationCertificate")
 
     info = ET.SubElement(root, "CertificateInfo")
-
-    ET.SubElement(
-    info,
-    "Laboratory"
-    ).text = "CSIR-National Physical Laboratory"
-
-    ET.SubElement(
-    info,
-    "CertificateType"
-).text = "Digital Calibration Certificate"
-
-    ET.SubElement(
-    info,
-    "IssueDate"
-    ).text = datetime.now().strftime("%Y-%m-%d")
-    
+    ET.SubElement(info, "Laboratory").text = "CSIR-National Physical Laboratory"
+    ET.SubElement(info, "CertificateType").text = "Digital Calibration Certificate"
+    ET.SubElement(info, "IssueDate").text = datetime.now().strftime("%Y-%m-%d")
+    ET.SubElement(info, "ConfidenceLevel").text = str(results["confidence"])
+    ET.SubElement(info, "CoverageFactor").text = str(results["coverage_factor"])
 
     stats = ET.SubElement(root, "Statistics")
 
@@ -53,6 +42,26 @@ def generate_xml(results):
         uncertainty,
         "TypeA"
     ).text = str(results["type_a"])
+
+    ET.SubElement(
+        uncertainty,
+        "ResolutionUnit"
+    ).text = results["resolution_unit"]
+
+    ET.SubElement(
+        uncertainty,
+        "CalibrationUnit"
+    ).text = results["calibration_unit"]
+
+    ET.SubElement(
+        uncertainty,
+        "DriftUnit"
+    ).text = results["drift_unit"]
+
+    ET.SubElement(
+        uncertainty,
+        "TemperatureUnit"
+    ).text = results["temperature_unit"]
 
     ET.SubElement(
         uncertainty,
@@ -281,38 +290,67 @@ Type B Contributions
 <tr>
 <th>Component</th>
 <th>Contribution</th>
+<th>Unit</th>
 </tr>
 
 <tr>
 <td>Resolution</td>
+
 <td>
 <xsl:value-of
 select="CalibrationCertificate/Uncertainty/ResolutionContribution"/>
 </td>
+
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/ResolutionUnit"/>
+</td>
+
 </tr>
 
 <tr>
 <td>Calibration</td>
+
 <td>
 <xsl:value-of
 select="CalibrationCertificate/Uncertainty/CalibrationContribution"/>
 </td>
+
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/CalibrationUnit"/>
+</td>
+
 </tr>
 
 <tr>
 <td>Drift</td>
+
 <td>
 <xsl:value-of
 select="CalibrationCertificate/Uncertainty/DriftContribution"/>
 </td>
+
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/DriftUnit"/>
+</td>
+
 </tr>
 
 <tr>
 <td>Temperature</td>
+
 <td>
 <xsl:value-of
 select="CalibrationCertificate/Uncertainty/TemperatureContribution"/>
 </td>
+
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/TemperatureUnit"/>
+</td>
+
 </tr>
 
 </table>
@@ -439,7 +477,24 @@ def calculate():
 
     temperature = float(request.form["temperature"])
 
-    k = float(request.form["k"])
+    resolution_unit = request.form["resolution_unit"]
+
+    calibration_unit = request.form["calibration_unit"]
+
+    drift_unit = request.form["drift_unit"]
+
+    temperature_unit = request.form["temperature_unit"]
+
+    confidence = int(request.form["confidence"])
+
+    if confidence == 90:
+        k = 1.645
+    elif confidence == 95:
+        k = 2.0
+    elif confidence == 99:
+        k = 2.58
+    else:
+        k = 2.0
 
     u_res = resolution / np.sqrt(12)
 
@@ -474,7 +529,13 @@ def calculate():
         "u_temp": round(u_temp, 8),
         "type_b": round(type_b, 8),
         "combined": round(combined, 8),
-        "expanded": round(expanded, 8)
+        "expanded": round(expanded, 8),
+        "confidence": confidence,
+        "coverage_factor": round(k, 3),
+        "resolution_unit": resolution_unit,
+        "calibration_unit": calibration_unit,
+        "drift_unit": drift_unit,
+        "temperature_unit": temperature_unit,
     }
 
     generate_xml(results)
