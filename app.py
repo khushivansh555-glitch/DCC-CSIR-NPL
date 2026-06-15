@@ -39,6 +39,21 @@ def generate_xml(results):
     uncertainty = ET.SubElement(root, "Uncertainty")
 
     ET.SubElement(
+    uncertainty,
+    "MCMean"
+    ).text = str(results["mc_mean"])
+
+    ET.SubElement(
+    uncertainty,
+    "MCStd"
+    ).text = str(results["mc_std"])
+
+    ET.SubElement(
+    uncertainty,
+    "MCExpanded"
+    ).text = str(results["mc_expanded"])  
+
+    ET.SubElement(
         uncertainty,
         "TypeA"
     ).text = str(results["type_a"])
@@ -97,6 +112,23 @@ def generate_xml(results):
         uncertainty,
         "Expanded"
     ).text = str(results["expanded"])
+
+# Comparison Section
+
+    comparison = ET.SubElement(
+        root,
+        "Comparison"
+    )
+
+    ET.SubElement(
+        comparison,
+        "Difference"
+    ).text = str(results["difference"])
+
+    ET.SubElement(
+        comparison,
+        "PercentDifference"
+    ).text = str(results["percent_difference"])
 
     xml_path = os.path.join(
         GENERATED_FOLDER,
@@ -400,6 +432,72 @@ select="CalibrationCertificate/Uncertainty/Expanded"/>
 
 </table>
 
+<div class="section-title">
+Monte Carlo Results
+</div>
+
+<table>
+
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+
+<tr>
+<td>Monte Carlo Mean</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/MCMean"/>
+</td>
+</tr>
+
+<tr>
+<td>Monte Carlo Std</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/MCStd"/>
+</td>
+</tr>
+
+<tr>
+<td>Monte Carlo Expanded</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/MCExpanded"/>
+</td>
+</tr>
+
+</table>
+
+<div class="section-title">
+GUM vs Monte Carlo Comparison
+</div>
+
+<table>
+
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+
+<tr>
+<td>Absolute Difference</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Comparison/Difference"/>
+</td>
+</tr>
+
+<tr>
+<td>Percent Difference</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Comparison/PercentDifference"/>%
+</td>
+</tr>
+
+</table>
+
 <div class="footer">
 
 <p>
@@ -518,6 +616,59 @@ def calculate():
 
     expanded = 2 * combined
 
+    # Monte Carlo Simulation
+
+    N = 100000
+
+    res_samples = np.random.uniform(
+        -resolution / 2,
+        resolution / 2,
+        N
+    )
+
+    cal_samples = np.random.normal(
+        0,
+        calibration / k,
+        N
+    )
+
+    drift_samples = np.random.uniform(
+        -drift,
+        drift,
+        N
+    )
+
+    temp_samples = np.random.uniform(
+        -temperature,
+        temperature,
+        N
+    )
+
+    mc_results = (
+        mean
+        + res_samples
+        + cal_samples
+        + drift_samples
+        + temp_samples
+    )
+
+    mc_mean = np.mean(mc_results)
+
+    mc_std = np.std(mc_results)
+
+    mc_expanded = k * mc_std
+
+    difference = abs(
+    expanded -
+    mc_expanded
+    )
+
+    percent_difference = (
+    difference / expanded
+    ) * 100
+
+    
+
     results = {
         "n": n,
         "mean": round(mean, 8),
@@ -536,6 +687,11 @@ def calculate():
         "calibration_unit": calibration_unit,
         "drift_unit": drift_unit,
         "temperature_unit": temperature_unit,
+        "mc_mean": round(mc_mean, 8),
+        "mc_std": round(mc_std, 8),
+        "mc_expanded": round(mc_expanded, 8),
+        "difference": round(difference, 8),
+        "percent_difference": round(percent_difference, 3),
     }
 
     generate_xml(results)

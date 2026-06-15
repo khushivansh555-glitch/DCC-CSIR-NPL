@@ -271,6 +271,72 @@ select="CalibrationCertificate/Uncertainty/Expanded"/>
 
 </table>
 
+<div class="section-title">
+Monte Carlo Results
+</div>
+
+<table>
+
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+
+<tr>
+<td>Monte Carlo Mean</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/MCMean"/>
+</td>
+</tr>
+
+<tr>
+<td>Monte Carlo Std</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/MCStd"/>
+</td>
+</tr>
+
+<tr>
+<td>Monte Carlo Expanded</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Uncertainty/MCExpanded"/>
+</td>
+</tr>
+
+</table>
+
+<div class="section-title">
+GUM vs Monte Carlo Comparison
+</div>
+
+<table>
+
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+
+<tr>
+<td>Absolute Difference</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Comparison/Difference"/>
+</td>
+</tr>
+
+<tr>
+<td>Percent Difference</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Comparison/PercentDifference"/>%
+</td>
+</tr>
+
+</table>
+
 <div class="footer">
 
 <p>
