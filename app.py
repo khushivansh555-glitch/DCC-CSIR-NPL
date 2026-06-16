@@ -4,6 +4,8 @@ from flask import (
     request,
     send_from_directory
 )
+from scipy.stats import norm
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import os
@@ -129,6 +131,32 @@ def generate_xml(results):
         comparison,
         "PercentDifference"
     ).text = str(results["percent_difference"])
+
+    bayesian = ET.SubElement(
+        root,
+        "Bayesian"
+    )
+
+    ET.SubElement(
+        bayesian,
+        "PosteriorMean"
+    ).text = str(results["posterior_mean"])
+
+    ET.SubElement(
+        bayesian,
+        "PosteriorStd"
+    ).text = str(results["posterior_std"])
+
+    ET.SubElement(
+        bayesian,
+        "CredibleLower"
+    ).text = str(results["credible_lower"])
+
+    ET.SubElement(
+        bayesian,
+        "CredibleUpper"
+    ).text = str(results["credible_upper"])
+
 
     xml_path = os.path.join(
         GENERATED_FOLDER,
@@ -498,6 +526,51 @@ select="CalibrationCertificate/Comparison/PercentDifference"/>%
 
 </table>
 
+<div class="section-title">
+Bayesian Inference Results
+</div>
+
+<table>
+
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+
+<tr>
+<td>Posterior Mean</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Bayesian/PosteriorMean"/>
+</td>
+</tr>
+
+<tr>
+<td>Posterior Std</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Bayesian/PosteriorStd"/>
+</td>
+</tr>
+
+<tr>
+<td>95% Credible Lower</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Bayesian/CredibleLower"/>
+</td>
+</tr>
+
+<tr>
+<td>95% Credible Upper</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Bayesian/CredibleUpper"/>
+</td>
+</tr>
+
+</table>
+
 <div class="footer">
 
 <p>
@@ -658,41 +731,150 @@ def calculate():
 
     mc_expanded = k * mc_std
 
+    # Bayesian Inference
+
+    prior_mean = mean
+
+    prior_std = combined
+
+    sample_mean = mean
+
+    sample_std = std
+
+    likelihood_var = (sample_std ** 2) / n
+
+    prior_var = prior_std ** 2
+
+    posterior_var = 1 / (
+        (1 / prior_var)
+        +
+        (1 / likelihood_var)
+    )
+
+    posterior_mean = posterior_var * (
+        (prior_mean / prior_var)
+        +
+        (sample_mean / likelihood_var)
+    )
+
+    posterior_std = np.sqrt(
+        posterior_var
+    )
+
+    lower95 = posterior_mean - (
+        1.96 * posterior_std
+    )
+
+    upper95 = posterior_mean + (
+        1.96 * posterior_std
+    )
+
+    x = np.linspace(
+        posterior_mean - 5 * posterior_std,
+        posterior_mean + 5 * posterior_std,
+        1000
+    )
+
+    prior_pdf = norm.pdf(
+        x,
+        prior_mean,
+        prior_std
+    )
+
+    likelihood_pdf = norm.pdf(
+        x,
+        sample_mean,
+        np.sqrt(likelihood_var)
+    )
+
+    posterior_pdf = norm.pdf(
+        x,
+        posterior_mean,
+        posterior_std
+    )
+    plt.figure(figsize=(8,5))
+
+    plt.plot(
+        x,
+        prior_pdf,
+        label="Prior"
+    )
+
+    plt.plot(
+        x,
+        likelihood_pdf,
+        label="Likelihood"
+    )
+
+    plt.plot(
+        x,
+        posterior_pdf,
+        label="Posterior"
+    )
+
+    plt.xlabel("Measured Value")
+
+    plt.ylabel("Probability Density")
+
+    plt.title(
+        "Bayesian Inference"
+    )
+
+    plt.legend()
+
+    plt.grid(True)
+
+    bayes_graph = os.path.join(
+        "static",
+        "bayesian_graph.png"
+    )
+
+    plt.savefig(
+        bayes_graph,
+        bbox_inches="tight"
+    )
+
+    plt.close()
+
     difference = abs(
-    expanded -
-    mc_expanded
+        expanded -
+        mc_expanded
     )
 
     percent_difference = (
-    difference / expanded
+        difference / expanded
     ) * 100
-
-    
 
     results = {
         "n": n,
-        "mean": round(mean, 8),
-        "std": round(std, 8),
-        "type_a": round(type_a, 8),
-        "u_res": round(u_res, 8),
-        "u_cal": round(u_cal, 8),
-        "u_drift": round(u_drift, 8),
-        "u_temp": round(u_temp, 8),
-        "type_b": round(type_b, 8),
-        "combined": round(combined, 8),
-        "expanded": round(expanded, 8),
-        "confidence": confidence,
-        "coverage_factor": round(k, 3),
-        "resolution_unit": resolution_unit,
-        "calibration_unit": calibration_unit,
-        "drift_unit": drift_unit,
-        "temperature_unit": temperature_unit,
-        "mc_mean": round(mc_mean, 8),
-        "mc_std": round(mc_std, 8),
-        "mc_expanded": round(mc_expanded, 8),
-        "difference": round(difference, 8),
-        "percent_difference": round(percent_difference, 3),
-    }
+            "mean": round(mean, 8),
+            "std": round(std, 8),
+            "type_a": round(type_a, 8),
+            "u_res": round(u_res, 8),
+            "u_cal": round(u_cal, 8),
+            "u_drift": round(u_drift, 8),
+            "u_temp": round(u_temp, 8),
+            "type_b": round(type_b, 8),
+            "combined": round(combined, 8),
+            "expanded": round(expanded, 8),
+            "confidence": confidence,
+            "coverage_factor": round(k, 3),
+            "resolution_unit": resolution_unit,
+            "calibration_unit": calibration_unit,
+            "drift_unit": drift_unit,
+            "temperature_unit": temperature_unit,
+            "mc_mean": round(mc_mean, 8),
+            "mc_std": round(mc_std, 8),
+            "mc_expanded": round(mc_expanded, 8),
+            "posterior_mean": round(float(posterior_mean), 8),
+            "posterior_std": round(float(posterior_std), 8),
+            "credible_lower": round(float(lower95), 8),
+            "credible_upper": round(float(upper95), 8),
+            "bayesian_graph":
+            "bayesian_graph.png",
+            "difference": round(difference, 8),
+            "percent_difference": round(percent_difference, 3),
+        }
 
     generate_xml(results)
 

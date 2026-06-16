@@ -337,6 +337,51 @@ select="CalibrationCertificate/Comparison/PercentDifference"/>%
 
 </table>
 
+<div class="section-title">
+Bayesian Inference Results
+</div>
+
+<table>
+
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+
+<tr>
+<td>Posterior Mean</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Bayesian/PosteriorMean"/>
+</td>
+</tr>
+
+<tr>
+<td>Posterior Std</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Bayesian/PosteriorStd"/>
+</td>
+</tr>
+
+<tr>
+<td>95% Credible Lower</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Bayesian/CredibleLower"/>
+</td>
+</tr>
+
+<tr>
+<td>95% Credible Upper</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Bayesian/CredibleUpper"/>
+</td>
+</tr>
+
+</table>
+
 <div class="footer">
 
 <p>
