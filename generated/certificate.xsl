@@ -116,6 +116,110 @@ Machine Readable Digital Calibration Certificate
 </div>
 
 <div class="section-title">
+Certificate Information
+</div>
+
+<table>
+
+<tr>
+<td>Certificate Number</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/CertificateInfo/CertificateNumber"/>
+</td>
+</tr>
+
+<tr>
+<td>Calibration Date</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/CertificateInfo/CalibrationDate"/>
+</td>
+</tr>
+
+<tr>
+<td>Issue Date</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/CertificateInfo/IssueDate"/>
+</td>
+</tr>
+
+</table>
+
+<div class="section-title">
+Customer Information
+</div>
+
+<table>
+
+<tr>
+<td>Customer Name</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Customer/CustomerName"/>
+</td>
+</tr>
+
+<tr>
+<td>Organization</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Customer/Organization"/>
+</td>
+</tr>
+
+</table>
+
+<div class="section-title">
+Instrument Information
+</div>
+
+<table>
+
+<tr>
+<td>Instrument Name</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Instrument/InstrumentName"/>
+</td>
+</tr>
+
+<tr>
+<td>Instrument ID</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Instrument/InstrumentID"/>
+</td>
+</tr>
+
+<tr>
+<td>Manufacturer</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Instrument/Manufacturer"/>
+</td>
+</tr>
+
+<tr>
+<td>Model Number</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Instrument/ModelNumber"/>
+</td>
+</tr>
+
+<tr>
+<td>Serial Number</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Instrument/SerialNumber"/>
+</td>
+</tr>
+
+</table>
+
+<div class="section-title">
 Statistical Analysis
 </div>
 
@@ -332,6 +436,59 @@ select="CalibrationCertificate/Comparison/Difference"/>
 <td>
 <xsl:value-of
 select="CalibrationCertificate/Comparison/PercentDifference"/>%
+</td>
+</tr>
+
+</table>
+
+<div class="section-title">
+D-SI Metadata
+</div>
+
+<table>
+
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+
+<tr>
+<td>Quantity</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DSI/Quantity"/>
+</td>
+</tr>
+
+<tr>
+<td>Measured Value</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DSI/MeasuredValue"/>
+</td>
+</tr>
+
+<tr>
+<td>Unit</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DSI/Unit"/>
+</td>
+</tr>
+
+<tr>
+<td>Expanded Uncertainty</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DSI/ExpandedUncertainty"/>
+</td>
+</tr>
+
+<tr>
+<td>Coverage Factor</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DSI/CoverageFactor"/>
 </td>
 </tr>
 

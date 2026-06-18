@@ -31,6 +31,75 @@ def generate_xml(results):
     ET.SubElement(info, "IssueDate").text = datetime.now().strftime("%Y-%m-%d")
     ET.SubElement(info, "ConfidenceLevel").text = str(results["confidence"])
     ET.SubElement(info, "CoverageFactor").text = str(results["coverage_factor"])
+    ET.SubElement(
+        info,
+        "CertificateNumber"
+    ).text = results["certificate_number"]
+
+    ET.SubElement(
+        info,
+        "CalibrationDate"
+    ).text = results["calibration_date"]
+
+    customer = ET.SubElement(
+        root,
+        "Customer"
+    )
+
+    ET.SubElement(
+        customer,
+        "CustomerName"
+    ).text = results["customer_name"]
+
+    ET.SubElement(
+        customer,
+        "Organization"
+    ).text = results["organization"]
+
+    instrument = ET.SubElement(
+        root,
+        "Instrument"
+    )
+
+    ET.SubElement(
+        instrument,
+        "InstrumentName"
+    ).text = results["instrument_name"]
+
+    ET.SubElement(
+        instrument,
+        "InstrumentID"
+    ).text = results["instrument_id"]
+
+    ET.SubElement(
+        instrument,
+        "Manufacturer"
+    ).text = results["manufacturer"]
+
+    ET.SubElement(
+        instrument,
+        "ModelNumber"
+    ).text = results["model_number"]
+
+    ET.SubElement(
+        instrument,
+        "SerialNumber"
+    ).text = results["serial_number"]
+
+    environment = ET.SubElement(
+        root,
+        "Environment"
+    )
+
+    ET.SubElement(
+        environment,
+        "Temperature"
+    ).text = results["ambient_temperature"]
+
+    ET.SubElement(
+        environment,
+        "Humidity"
+    ).text = results["humidity"]
 
     stats = ET.SubElement(root, "Statistics")
 
@@ -157,6 +226,49 @@ def generate_xml(results):
         "CredibleUpper"
     ).text = str(results["credible_upper"])
 
+    remarks = ET.SubElement(
+        root,
+        "Remarks"
+    )
+
+    remarks.text = results["remarks"]
+
+    # D-SI Section
+
+    dsi = ET.SubElement(
+        root,
+        "DSI"
+    )
+
+    ET.SubElement(
+        dsi,
+        "Quantity"
+    ).text = results["quantity"]
+
+    ET.SubElement(
+        dsi,
+        "MeasuredValue"
+    ).text = str(results["mean"])
+
+    ET.SubElement(
+        dsi,
+        "ExpandedUncertainty"
+    ).text = str(results["expanded"])
+
+    ET.SubElement(
+        dsi,
+        "CoverageFactor"
+    ).text = str(results["coverage_factor"])
+
+    ET.SubElement(
+    dsi,
+    "Unit"
+    ).text = results["resolution_unit"]
+
+    ET.SubElement(
+    dsi,
+    "Symbol"
+    ).text = results["resolution_unit"]
 
     xml_path = os.path.join(
         GENERATED_FOLDER,
@@ -303,6 +415,110 @@ Machine Readable Digital Calibration Certificate
 </div>
 
 </div>
+
+<div class="section-title">
+Certificate Information
+</div>
+
+<table>
+
+<tr>
+<td>Certificate Number</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/CertificateInfo/CertificateNumber"/>
+</td>
+</tr>
+
+<tr>
+<td>Calibration Date</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/CertificateInfo/CalibrationDate"/>
+</td>
+</tr>
+
+<tr>
+<td>Issue Date</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/CertificateInfo/IssueDate"/>
+</td>
+</tr>
+
+</table>
+
+<div class="section-title">
+Customer Information
+</div>
+
+<table>
+
+<tr>
+<td>Customer Name</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Customer/CustomerName"/>
+</td>
+</tr>
+
+<tr>
+<td>Organization</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Customer/Organization"/>
+</td>
+</tr>
+
+</table>
+
+<div class="section-title">
+Instrument Information
+</div>
+
+<table>
+
+<tr>
+<td>Instrument Name</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Instrument/InstrumentName"/>
+</td>
+</tr>
+
+<tr>
+<td>Instrument ID</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Instrument/InstrumentID"/>
+</td>
+</tr>
+
+<tr>
+<td>Manufacturer</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Instrument/Manufacturer"/>
+</td>
+</tr>
+
+<tr>
+<td>Model Number</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Instrument/ModelNumber"/>
+</td>
+</tr>
+
+<tr>
+<td>Serial Number</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/Instrument/SerialNumber"/>
+</td>
+</tr>
+
+</table>
 
 <div class="section-title">
 Statistical Analysis
@@ -527,6 +743,59 @@ select="CalibrationCertificate/Comparison/PercentDifference"/>%
 </table>
 
 <div class="section-title">
+D-SI Metadata
+</div>
+
+<table>
+
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+
+<tr>
+<td>Quantity</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DSI/Quantity"/>
+</td>
+</tr>
+
+<tr>
+<td>Measured Value</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DSI/MeasuredValue"/>
+</td>
+</tr>
+
+<tr>
+<td>Unit</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DSI/Unit"/>
+</td>
+</tr>
+
+<tr>
+<td>Expanded Uncertainty</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DSI/ExpandedUncertainty"/>
+</td>
+</tr>
+
+<tr>
+<td>Coverage Factor</td>
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DSI/CoverageFactor"/>
+</td>
+</tr>
+
+</table>
+
+<div class="section-title">
 Bayesian Inference Results
 </div>
 
@@ -639,6 +908,31 @@ def calculate():
     std = np.std(readings, ddof=1)
 
     type_a = std / np.sqrt(n)
+    # Certificate Information
+
+    certificate_number = request.form["certificate_number"]
+
+    customer_name = request.form["customer_name"]
+
+    organization = request.form["organization"]
+
+    instrument_name = request.form["instrument_name"]
+
+    instrument_id = request.form["instrument_id"]
+
+    manufacturer = request.form["manufacturer"]
+
+    model_number = request.form["model_number"]
+
+    serial_number = request.form["serial_number"]
+
+    calibration_date = request.form["calibration_date"]
+
+    ambient_temperature = request.form["ambient_temperature"]
+
+    humidity = request.form["humidity"]
+
+    remarks = request.form["remarks"]
 
     resolution = float(request.form["resolution"])
 
@@ -655,6 +949,8 @@ def calculate():
     drift_unit = request.form["drift_unit"]
 
     temperature_unit = request.form["temperature_unit"]
+
+    quantity = request.form["quantity"]
 
     confidence = int(request.form["confidence"])
 
@@ -687,7 +983,7 @@ def calculate():
         type_b**2
     )
 
-    expanded = 2 * combined
+    expanded = k * combined
 
     # Monte Carlo Simulation
 
@@ -846,6 +1142,31 @@ def calculate():
     ) * 100
 
     results = {
+        "quantity": quantity,
+
+        "certificate_number": certificate_number,
+
+"customer_name": customer_name,
+
+"organization": organization,
+
+"instrument_name": instrument_name,
+
+"instrument_id": instrument_id,
+
+"manufacturer": manufacturer,
+
+"model_number": model_number,
+
+"serial_number": serial_number,
+
+"calibration_date": calibration_date,
+
+"ambient_temperature": ambient_temperature,
+
+"humidity": humidity,
+
+    "remarks": remarks,
         "n": n,
             "mean": round(mean, 8),
             "std": round(std, 8),
