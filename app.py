@@ -6,7 +6,8 @@ from flask import (
     Flask,
     render_template,
     request,
-    send_from_directory
+    send_from_directory,
+    jsonify
 )
 from scipy.stats import norm
 import matplotlib.pyplot as plt
@@ -357,6 +358,8 @@ def generate_xslt():
 
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:output method="html" indent="yes"/>
 
 <xsl:template match="/">
 
@@ -972,6 +975,31 @@ def home():
     return render_template("index.html")
 
 
+@app.route("/excel_meta", methods=["POST"])
+def excel_meta():
+    file = request.files.get("excel")
+    sheet_name = request.form.get("sheet_name")
+
+    if file is None:
+        return jsonify({"sheets": [], "columns": []})
+
+    try:
+        xls = pd.ExcelFile(file)
+        sheets = xls.sheet_names
+        columns = []
+
+        if sheet_name in sheets:
+            df = pd.read_excel(xls, sheet_name=sheet_name)
+            columns = [str(col) for col in df.columns]
+        elif sheets:
+            df = pd.read_excel(xls, sheet_name=sheets[0])
+            columns = [str(col) for col in df.columns]
+
+        return jsonify({"sheets": sheets, "columns": columns})
+    except Exception:
+        return jsonify({"sheets": [], "columns": []})
+
+
 @app.route("/calculate", methods=["POST"])
 def calculate():
 
@@ -984,9 +1012,18 @@ def calculate():
 
     file.save(path)
 
-    df = pd.read_excel(path)
+    sheet_name = request.form.get("sheet_name")
+    column_name = request.form.get("column_name")
 
-    readings = df.iloc[:, 0].dropna().values
+    if sheet_name:
+        df = pd.read_excel(path, sheet_name=sheet_name)
+    else:
+        df = pd.read_excel(path)
+
+    if column_name:
+        readings = df[column_name].dropna().values
+    else:
+        readings = df.iloc[:, 0].dropna().values
 
     n = len(readings)
 
@@ -1214,6 +1251,43 @@ def calculate():
 
     plt.savefig(
         bayes_graph,
+        bbox_inches="tight"
+    )
+
+    plt.close()
+
+    plt.figure(figsize=(8,5))
+
+    plt.hist(
+        mc_results,
+        bins=50,
+        density=True,
+        alpha=0.7,
+        color="tab:blue",
+        edgecolor="black",
+        label="MC results"
+    )
+
+    plt.axvline(
+        mc_mean,
+        color="red",
+        linestyle="--",
+        label="MC mean"
+    )
+
+    plt.xlabel("Simulated Value")
+    plt.ylabel("Density")
+    plt.title("Monte Carlo Histogram")
+    plt.legend()
+    plt.grid(True)
+
+    mc_hist_path = os.path.join(
+        "static",
+        "mc_histogram.png"
+    )
+
+    plt.savefig(
+        mc_hist_path,
         bbox_inches="tight"
     )
 

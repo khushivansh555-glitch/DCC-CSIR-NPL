@@ -77,6 +77,20 @@
             <input type="file" name="excel" required />
           </div>
 
+          <div class="field-row">
+            <label>Sheet Name</label>
+            <select name="sheet_name" disabled>
+              <option value="">Select sheet</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label>Column Name</label>
+            <select name="column_name" disabled>
+              <option value="">Select column</option>
+            </select>
+          </div>
+
           <div class="form-grid">
             <div class="field-row">
               <label>Resolution</label>
@@ -140,9 +154,79 @@
             </div>
           </div>
 
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              const excelInput = document.querySelector("input[name='excel']");
+              const sheetSelect = document.querySelector("select[name='sheet_name']");
+              const columnSelect = document.querySelector("select[name='column_name']");
+
+              const clearSelect = (select, placeholder) => {
+                select.innerHTML = "";
+                const option = document.createElement("option");
+                option.value = "";
+                option.textContent = placeholder;
+                select.appendChild(option);
+              };
+
+              const populateSelect = (select, items, placeholder) => {
+                clearSelect(select, placeholder);
+                items.forEach((item) => {
+                  const option = document.createElement("option");
+                  option.value = item;
+                  option.textContent = item;
+                  select.appendChild(option);
+                });
+                select.disabled = items.length === 0;
+              };
+
+              const fetchMetadata = async (sheetName) => {
+                const file = excelInput.files[0];
+                if (!file) {
+                  clearSelect(sheetSelect, "Select sheet");
+                  clearSelect(columnSelect, "Select column");
+                  sheetSelect.disabled = true;
+                  columnSelect.disabled = true;
+                  return;
+                }
+
+                const formData = new FormData();
+                formData.append("excel", file);
+                if (sheetName) {
+                  formData.append("sheet_name", sheetName);
+                }
+
+                try {
+                  const response = await fetch("/excel_meta", {
+                    method: "POST",
+                    body: formData,
+                  });
+                  const data = await response.json();
+
+                  populateSelect(sheetSelect, data.sheets || [], "Select sheet");
+                  populateSelect(columnSelect, data.columns || [], "Select column");
+                } catch (error) {
+                  clearSelect(sheetSelect, "Select sheet");
+                  clearSelect(columnSelect, "Select column");
+                  sheetSelect.disabled = true;
+                  columnSelect.disabled = true;
+                }
+              };
+
+              excelInput.addEventListener("change", () => {
+                fetchMetadata();
+              });
+
+              sheetSelect.addEventListener("change", () => {
+                const sheetValue = sheetSelect.value;
+                if (sheetValue) {
+                  fetchMetadata(sheetValue);
+                }
+              });
+            });
+          </script>
+
           <div class="field-row">
             <label>Measured Quantity</label>
-
             <select name="quantity">
               <option value="Resistance">Resistance</option>
               <option value="Capacitance">Capacitance</option>
