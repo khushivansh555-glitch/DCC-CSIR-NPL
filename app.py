@@ -1,3 +1,7 @@
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import serialization
 from flask import (
     Flask,
     render_template,
@@ -19,6 +23,23 @@ GENERATED_FOLDER = "generated"
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(GENERATED_FOLDER, exist_ok=True)
+
+def sign_data(data):
+
+    with open("private_key.pem", "rb") as key_file:
+
+        private_key = serialization.load_pem_private_key(
+            key_file.read(),
+            password=None
+        )
+
+    signature = private_key.sign(
+        data.encode(),
+        padding.PKCS1v15(),
+        hashes.SHA256()
+    )
+
+    return signature.hex()
 
 
 def generate_xml(results):
@@ -261,13 +282,13 @@ def generate_xml(results):
     ).text = str(results["coverage_factor"])
 
     ET.SubElement(
-    dsi,
-    "Unit"
+        dsi,
+        "Unit"
     ).text = results["resolution_unit"]
 
     ET.SubElement(
-    dsi,
-    "Symbol"
+        dsi,
+        "Symbol"
     ).text = results["resolution_unit"]
 
     xml_path = os.path.join(
@@ -275,6 +296,39 @@ def generate_xml(results):
         "certificate.xml"
     )
 
+    # Create Signature Section
+    signature_section = ET.SubElement(
+        root,
+        "DigitalSignature"
+    )
+
+    ET.SubElement(
+        signature_section,
+        "Algorithm"
+    ).text = "RSA-SHA256"
+
+    ET.SubElement(
+        signature_section,
+        "SignatureValue"
+    ).text = "Pending"
+
+    # Create XML
+    xml_content = ET.tostring(
+        root,
+        encoding="unicode"
+    )
+
+    # Sign XML
+    signature = sign_data(
+        xml_content
+    )
+
+    # Replace Pending
+    signature_section.find(
+    "SignatureValue"
+    ).text = signature[:32] + "..."
+
+    # Recreate XML with Signature
     xml_content = ET.tostring(
         root,
         encoding="unicode"
@@ -836,6 +890,39 @@ select="CalibrationCertificate/Bayesian/CredibleLower"/>
 <xsl:value-of
 select="CalibrationCertificate/Bayesian/CredibleUpper"/>
 </td>
+</tr>
+
+</table>
+
+<div class="section-title">
+Digital Signature
+</div>
+
+<table>
+
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+
+<tr>
+<td>Algorithm</td>
+
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DigitalSignature/Algorithm"/>
+</td>
+
+</tr>
+
+<tr>
+<td>Signature</td>
+
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DigitalSignature/SignatureValue"/>
+</td>
+
 </tr>
 
 </table>

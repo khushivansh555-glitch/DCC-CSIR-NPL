@@ -539,6 +539,39 @@ select="CalibrationCertificate/Bayesian/CredibleUpper"/>
 
 </table>
 
+<div class="section-title">
+Digital Signature
+</div>
+
+<table>
+
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+
+<tr>
+<td>Algorithm</td>
+
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DigitalSignature/Algorithm"/>
+</td>
+
+</tr>
+
+<tr>
+<td>Signature</td>
+
+<td>
+<xsl:value-of
+select="CalibrationCertificate/DigitalSignature/SignatureValue"/>
+</td>
+
+</tr>
+
+</table>
+
 <div class="footer">
 
 <p>
