@@ -1,0 +1,9 @@
+keys/private_key.pem
+
+uploads/
+
+generated/
+
+__pycache__/
+
+*.pyc
