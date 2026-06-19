@@ -7,20 +7,28 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <title>Calibration Certificate</title>
 <style><![CDATA[
-body{font-family:Arial, sans-serif;margin:30px;color:#000}
-.header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid #999;padding-bottom:8px;margin-bottom:14px}
-.hdr-left{flex:0 0 120px}
-.hdr-left img{width:120px}
-.hdr-center{flex:1;text-align:left;padding-left:10px}
+.body{font-family:Arial, sans-serif;margin:30px;color:#000}
+.header{display:flex;align-items:flex-start;justify-content:flex-start;gap:12px;border-bottom:2px solid #999;padding-bottom:8px;margin-bottom:14px}
+.hdr-left{flex:0 0 100px}
+.hdr-left img{width:100px}
+.hdr-center{flex:1 1 auto;text-align:left;padding-left:10px;min-width:0}
 .org-hi{color:#c0392b;font-weight:700;font-size:18px;margin:0}
 .org-en{color:#2c3e50;font-weight:700;font-size:16px;margin:2px 0}
-.hdr-right{flex:0 0 260px;border-left:3px solid #ddd;padding-left:12px}
+.header-subtext p{margin:2px 0;font-size:12px;line-height:1.3}
+.hdr-right{flex:0 0 140px;border-left:3px solid #ddd;padding-left:12px}
 .cert-box{border:1px solid #333;padding:8px}
 .cert-title{font-weight:700;font-size:14px;margin:0 0 6px 0}
 .section-title{background:#003366;color:#fff;padding:8px;margin-top:18px;margin-bottom:10px;font-weight:bold}
 table{border-collapse:collapse;width:100%;margin-bottom:12px}
 th,td{border:1px solid #444;padding:6px;text-align:left}
 th{background:#f1f7fb}
+.footer-signatures{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+.footer-column{flex:1 1 220px;min-width:200px;border:1px solid #444;padding:10px;text-align:left}
+.footer-label{display:flex;justify-content:space-between;gap:12px;font-weight:700;margin-bottom:8px}
+.footer-label span{display:inline-block}
+.footer-en{text-align:left;flex:1}
+.footer-hi{text-align:right;flex:1}
+.footer-placeholder{margin-top:10px;font-size:14px}
 ]]></style>
 </head>
 <body>
@@ -30,6 +38,15 @@ th{background:#f1f7fb}
   <div class="hdr-center">
     <p class="org-hi">सी एस आई आर - राष्ट्रीय भौतिक प्रयोगशाला</p>
     <p class="org-en">CSIR - NATIONAL PHYSICAL LABORATORY</p>
+    <div class="header-subtext">
+      <p>(Council of Scientific and Industrial Research)</p>
+      <p>(National Metrology Institute (NMI), Member BIPM and Signatory CIPM-MRA)</p>
+      <p>Dr. K. S. Krishnan Marg, New Delhi – 110012, INDIA</p>
+      <p>Phone: +91-11-4560 8441, 8610, 9447</p>
+      <p>Fax: +91-11-4560 8448</p>
+      <p>E-mail: [cttc@nplindia.org]</p>
+      <p>Website: [www.nplindia.org]</p>
+    </div>
   </div>
   <div class="hdr-right"><div class="cert-box"><p class="cert-title">CALIBRATION CERTIFICATE</p><p>Certificate No.: <strong><xsl:value-of select="CalibrationCertificate/CertificateInfo/CertificateNumber"/></strong></p><p>Date: <xsl:value-of select="CalibrationCertificate/CertificateInfo/IssueDate"/></p></div></div>
 </div>
@@ -94,6 +111,41 @@ th{background:#f1f7fb}
   <tr><td>Algorithm</td><td><xsl:value-of select="CalibrationCertificate/DigitalSignature/Algorithm"/></td></tr>
   <tr><td>Signature</td><td><xsl:value-of select="CalibrationCertificate/DigitalSignature/SignatureValue"/></td></tr>
 </table>
+
+<div class="footer-signatures">
+  <div class="footer-column">
+    <p class="footer-label">
+      <span class="footer-en">Calibrated by:</span>
+      <span class="footer-hi">कैलिब्रेटेड बाय:</span>
+    </p>
+    <p>________________________</p>
+    <p>(Name) / (नाम)</p>
+  </div>
+  <div class="footer-column">
+    <p class="footer-label">
+      <span class="footer-en">Checked by:</span>
+      <span class="footer-hi">चेक्ड बाय:</span>
+    </p>
+    <p>________________________</p>
+    <p>(Name) / (नाम)</p>
+  </div>
+  <div class="footer-column">
+    <p class="footer-label">
+      <span class="footer-en">Scientist-in-charge:</span>
+      <span class="footer-hi">वैज्ञानिक प्रभारी:</span>
+    </p>
+    <p>________________________</p>
+    <p>(Name) / (नाम)</p>
+  </div>
+  <div class="footer-column">
+    <p class="footer-label">
+      <span class="footer-en">Issued by:</span>
+      <span class="footer-hi">जारीकर्ता:</span>
+    </p>
+    <p>________________________</p>
+    <p>(Director's Nominee) / (निदेशक का नामित)</p>
+  </div>
+</div>
 
 <div style="margin-top:20px;font-size:12px">Certificate generated automatically.</div>
 
