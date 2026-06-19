@@ -2,3 +2,7 @@ Flask
 pandas
 numpy
 openpyxl
+fpdf2
+lxml
+scipy
+matplotlib
