@@ -168,12 +168,15 @@
                 select.appendChild(option);
               };
 
-              const populateSelect = (select, items, placeholder) => {
+              const populateSelect = (select, items, placeholder, selectedValue) => {
                 clearSelect(select, placeholder);
                 items.forEach((item) => {
                   const option = document.createElement("option");
                   option.value = item;
                   option.textContent = item;
+                  if (selectedValue && selectedValue === item) {
+                    option.selected = true;
+                  }
                   select.appendChild(option);
                 });
                 select.disabled = items.length === 0;
@@ -202,7 +205,7 @@
                   });
                   const data = await response.json();
 
-                  populateSelect(sheetSelect, data.sheets || [], "Select sheet");
+                  populateSelect(sheetSelect, data.sheets || [], "Select sheet", sheetName);
                   populateSelect(columnSelect, data.columns || [], "Select column");
                 } catch (error) {
                   clearSelect(sheetSelect, "Select sheet");

@@ -7,15 +7,15 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <title>Calibration Certificate</title>
 <style><![CDATA[
-.body{font-family:Arial, sans-serif;margin:30px;color:#000}
-.header{display:flex;align-items:flex-start;justify-content:flex-start;gap:12px;border-bottom:2px solid #999;padding-bottom:8px;margin-bottom:14px}
+body{font-family:Arial, sans-serif;margin:30px;color:#000}
+.header{display:flex;align-items:flex-start;justify-content:flex-start;border-bottom:2px solid #999;padding-bottom:8px;margin-bottom:14px;position:relative}
 .hdr-left{flex:0 0 100px}
 .hdr-left img{width:100px}
-.hdr-center{flex:1 1 auto;text-align:left;padding-left:10px;min-width:0}
-.org-hi{color:#c0392b;font-weight:700;font-size:18px;margin:0}
+    .hdr-center{flex:1 1 auto;text-align:left;padding-left:10px;min-width:0}
+    .org-hi{color:#c0392b;font-weight:700;font-size:18px;margin:0}
 .org-en{color:#2c3e50;font-weight:700;font-size:16px;margin:2px 0}
 .header-subtext p{margin:2px 0;font-size:12px;line-height:1.3}
-.hdr-right{flex:0 0 140px;border-left:3px solid #ddd;padding-left:12px}
+    .hdr-right{flex:0 0 140px;border-left:3px solid #ddd;padding-left:12px}
 .cert-box{border:1px solid #333;padding:8px}
 .cert-title{font-weight:700;font-size:14px;margin:0 0 6px 0}
 .section-title{background:#003366;color:#fff;padding:8px;margin-top:18px;margin-bottom:10px;font-weight:bold}
@@ -56,11 +56,10 @@ th{background:#f1f7fb}
   <tr><td>Certificate Number</td><td><xsl:value-of select="CalibrationCertificate/CertificateInfo/CertificateNumber"/></td></tr>
   <tr><td>Calibration Date</td><td><xsl:value-of select="CalibrationCertificate/CertificateInfo/CalibrationDate"/></td></tr>
   <tr><td>Issue Date</td><td><xsl:value-of select="CalibrationCertificate/CertificateInfo/IssueDate"/></td></tr>
-</table>
-
-<div class="section-title">Customer Information</div>
-<table>
-  <tr><td>Customer Name</td><td><xsl:value-of select="CalibrationCertificate/Customer/CustomerName"/></td></tr>
+  <tr><td>Uploaded Data File</td><td><a>
+        <xsl:attribute name="href"><xsl:text>/uploads/</xsl:text><xsl:value-of select="CalibrationCertificate/CertificateInfo/UploadedDataFile"/></xsl:attribute>
+        <xsl:value-of select="CalibrationCertificate/CertificateInfo/UploadedDataFile"/>
+      </a></td></tr>
   <tr><td>Organization</td><td><xsl:value-of select="CalibrationCertificate/Customer/Organization"/></td></tr>
 </table>
 

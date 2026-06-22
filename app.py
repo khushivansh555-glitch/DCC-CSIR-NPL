@@ -61,6 +61,7 @@ def generate_xml(results):
     ET.SubElement(info, "CoverageFactor").text = str(results.get("coverage_factor", ""))
     ET.SubElement(info, "CertificateNumber").text = results.get("certificate_number", "")
     ET.SubElement(info, "CalibrationDate").text = results.get("calibration_date", "")
+    ET.SubElement(info, "UploadedDataFile").text = results.get("uploaded_file", "")
 
     customer = ET.SubElement(root, "Customer")
     ET.SubElement(customer, "CustomerName").text = results.get("customer_name", "")
@@ -199,11 +200,10 @@ th{background:#f1f7fb}
   <tr><td>Certificate Number</td><td><xsl:value-of select="CalibrationCertificate/CertificateInfo/CertificateNumber"/></td></tr>
   <tr><td>Calibration Date</td><td><xsl:value-of select="CalibrationCertificate/CertificateInfo/CalibrationDate"/></td></tr>
   <tr><td>Issue Date</td><td><xsl:value-of select="CalibrationCertificate/CertificateInfo/IssueDate"/></td></tr>
-</table>
-
-<div class="section-title">Customer Information</div>
-<table>
-  <tr><td>Customer Name</td><td><xsl:value-of select="CalibrationCertificate/Customer/CustomerName"/></td></tr>
+  <tr><td>Uploaded Data File</td><td><a>
+        <xsl:attribute name="href"><xsl:text>/uploads/</xsl:text><xsl:value-of select="CalibrationCertificate/CertificateInfo/UploadedDataFile"/></xsl:attribute>
+        <xsl:value-of select="CalibrationCertificate/CertificateInfo/UploadedDataFile"/>
+      </a></td></tr>
   <tr><td>Organization</td><td><xsl:value-of select="CalibrationCertificate/Customer/Organization"/></td></tr>
 </table>
 
@@ -352,6 +352,11 @@ def calculate():
         readings = df[column_name].dropna().values
     else:
         readings = df.iloc[:, 0].dropna().values
+
+    uploaded_file = file.filename
+    uploaded_sheet = sheet_name or ""
+    uploaded_column = column_name if column_name else str(df.columns[0] if len(df.columns) > 0 else "")
+    uploaded_values = [str(value) for value in readings.tolist()]
 
     n = len(readings)
     mean = np.mean(readings)
@@ -503,6 +508,7 @@ def calculate():
         "calibration_unit": calibration_unit,
         "drift_unit": drift_unit,
         "temperature_unit": temperature_unit,
+        "uploaded_file": uploaded_file,
         "mc_mean": round(mc_mean, 8),
         "mc_std": round(mc_std, 8),
         "mc_expanded": round(mc_expanded, 8),
@@ -531,12 +537,18 @@ def download_xslt():
     return send_from_directory(GENERATED_FOLDER, "certificate.xsl", as_attachment=True)
 
 
+@app.route("/uploads/<path:filename>")
+def uploaded_file_route(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
+
+
 @app.route("/view/certificate")
 def view_certificate():
     xml_path = os.path.join(GENERATED_FOLDER, "certificate.xml")
-    # Apply XSLT server-side and return HTML so browsers always show the certificate
-    xml_path = os.path.join(GENERATED_FOLDER, "certificate.xml")
     xslt_path = os.path.join(GENERATED_FOLDER, "certificate.xsl")
+
+    # Regenerate XSLT before rendering to ensure the latest uploaded data block is used
+    generate_xslt()
 
     try:
         with open(xml_path, "rb") as xf, open(xslt_path, "rb") as sf:
@@ -546,7 +558,10 @@ def view_certificate():
             html_doc = transformer(xml_doc)
             html_string = etree.tostring(html_doc, encoding="unicode", method="html")
 
-        return html_string, 200, {"Content-Type": "text/html; charset=utf-8"}
+        return html_string, 200, {
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        }
     except Exception:
         # Fallback to raw XML if transform fails
         try:
